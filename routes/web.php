@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TurnoCajaController;
+use Illuminate\Support\Facades\Artisan;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,6 +33,14 @@ Route::group(['middleware' => 'auth'], function () {
         Route::resource('turnos', TurnoCajaController::class)->only(['index', 'create', 'store', 'show']);
         Route::get('/turnos/{turno}/cerrar', 'TurnoCajaController@showCerrar')->name('turnos.cerrar.show');
         Route::post('/turnos/{turno}/cerrar', 'TurnoCajaController@cerrar')->name('turnos.cerrar');
+
+    Route::get('/seed-database', function () {
+        // Ejecuta el comando de semillas
+        Artisan::call('db:seed');
+
+        // Muestra un mensaje después de ejecutar el comando
+        return 'Comando de semillas ejecutado con éxito.';
+    });
 
 
 });

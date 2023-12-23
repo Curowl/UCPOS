@@ -52,9 +52,8 @@ PUSHER_APP_CLUSTER=mt1
 MIX_PUSHER_APP_KEY="${PUSHER_APP_KEY}"
 MIX_PUSHER_APP_CLUSTER="${PUSHER_APP_CLUSTER}"
 
-WKHTML_PDF_BINARY=/proyecto_laravel/bin/wkhtmltox.deb
 
-NIXPACKS_BUILD_CMD=composer install && yarn && yarn prod && php artisan optimize && php artisan config:cache && php artisan route:cache && php artisan view:cache && php artisan migrate --seed
+
 
 NIXPACKS_BUILD_CMD=composer install && php artisan optimize:clear && php artisan storage:link && php artisan migrate --force
 
