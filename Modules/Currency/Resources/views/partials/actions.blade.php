@@ -3,6 +3,7 @@
         <i class="bi bi-pencil"></i>
     </a>
 @endcan
+{{--
 @can('delete_currencies')
     <button id="delete" class="btn btn-danger btn-sm" onclick="
         event.preventDefault();
@@ -17,3 +18,4 @@
         </form>
     </button>
 @endcan
+--}}

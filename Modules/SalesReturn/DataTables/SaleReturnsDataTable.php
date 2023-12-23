@@ -30,13 +30,16 @@ class SaleReturnsDataTable extends DataTable
             ->addColumn('payment_status', function ($data) {
                 return view('salesreturn::partials.payment-status', compact('data'));
             })
+            ->editColumn('created_at', function ($data) {
+                return $data->created_at->format('d/m/Y h:i:s A');
+            })
             ->addColumn('action', function ($data) {
                 return view('salesreturn::partials.actions', compact('data'));
             });
     }
 
     public function query(SaleReturn $model) {
-        return $model->newQuery();
+        return $model->newQuery()->orderBy('created_at', 'desc');
     }
 
     public function html() {
@@ -48,49 +51,77 @@ class SaleReturnsDataTable extends DataTable
                                 'tr' .
                                 <'row'<'col-md-5'i><'col-md-7 mt-2'p>>")
             ->orderBy(8)
+            ->language([
+                'lengthMenu' => 'Mostrar _MENU_ entradas por página',
+                'zeroRecords' => 'No se encontraron registros coincidentes',
+                'info' => 'Mostrando _START_ a _END_ de _TOTAL_ entradas',
+                'infoEmpty' => 'Mostrando 0 a 0 de 0 entradas',
+                'infoFiltered' => '(filtrado de _MAX_ entradas totales)',
+                'search' => 'Buscar:',
+                'paginate' => [
+                    'first' => 'Primero',
+                    'last' => 'Último',
+                    'next' => 'Siguiente',
+                    'previous' => 'Anterior',
+                ],
+            ])
             ->buttons(
-                Button::make('excel')
-                    ->text('<i class="bi bi-file-earmark-excel-fill"></i> Excel'),
-                Button::make('print')
-                    ->text('<i class="bi bi-printer-fill"></i> Print'),
-                Button::make('reset')
-                    ->text('<i class="bi bi-x-circle"></i> Reset'),
-                Button::make('reload')
-                    ->text('<i class="bi bi-arrow-repeat"></i> Reload')
-            );
+                    Button::make('excel')
+                        ->text('<i class="bi bi-file-earmark-excel-fill"></i> Excel'),
+                    Button::make('print')
+                        ->text('<i class="bi bi-printer-fill"></i> Imprimir'),
+                    Button::make('reset')
+                        ->text('<i class="bi bi-x-circle"></i> Resetear'),
+                    Button::make('reload')
+                        ->text('<i class="bi bi-arrow-repeat"></i> Recargar')
+                );
+
     }
 
     protected function getColumns() {
         return [
             Column::make('reference')
+            ->title('referencia')
                 ->className('text-center align-middle'),
 
             Column::make('customer_name')
-                ->title('Customer')
+            ->title('Cliente')
                 ->className('text-center align-middle'),
 
             Column::computed('status')
+            ->title('Estado')
                 ->className('text-center align-middle'),
 
             Column::computed('total_amount')
+            ->title('Monto Total')
                 ->className('text-center align-middle'),
 
             Column::computed('paid_amount')
-                ->className('text-center align-middle'),
+            ->title('Monto de Pago')
+                ->className('text-center align-middle')
+                ->visible(false)->exportable(false) ->printable(false),
 
             Column::computed('due_amount')
-                ->className('text-center align-middle'),
+            ->title('Monto del cambio')
+                ->className('text-center align-middle')
+                ->visible(false)->exportable(false) ->printable(false),
 
             Column::computed('payment_status')
-                ->className('text-center align-middle'),
+            ->title('Estado del pago')
+                ->className('text-center align-middle')
+                ->visible(false)->exportable(false) ->printable(false),
+
+            Column::make('created_at')
+                ->title('Creado'),
 
             Column::computed('action')
+            ->title('Accion')
                 ->exportable(false)
                 ->printable(false)
                 ->className('text-center align-middle'),
 
-            Column::make('created_at')
-                ->visible(false)
+
+
         ];
     }
 

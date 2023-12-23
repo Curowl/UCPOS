@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Units')
+@section('title', 'Unidades')
 
 @section('third_party_stylesheets')
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/dataTables.bootstrap4.min.css">
@@ -9,8 +9,8 @@
 
 @section('breadcrumb')
     <ol class="breadcrumb border-0 m-0">
-        <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
-        <li class="breadcrumb-item active">Units</li>
+        <li class="breadcrumb-item"><a href="{{ route('home') }}">Inicio</a></li>
+        <li class="breadcrumb-item active">Unidades</li>
     </ol>
 @endsection
 
@@ -21,7 +21,7 @@
                 <div class="card border-0 shadow-sm">
                     <div class="card-body">
                         <a href="{{ route('units.create') }}" class="btn btn-primary">
-                            Add Unit <i class="bi bi-plus"></i>
+                            Agregar Unidad <i class="bi bi-plus"></i>
                         </a>
 
                         <hr>
@@ -31,11 +31,11 @@
                                 <thead>
                                 <tr>
                                     <th class="align-middle">No.</th>
-                                    <th class="align-middle">Name</th>
-                                    <th class="align-middle">Short Name</th>
-                                    <th class="align-middle">Operator</th>
-                                    <th class="align-middle">Operation Value</th>
-                                    <th class="align-middle">Action</th>
+                                    <th class="align-middle">Nombre</th>
+                                    <th class="align-middle">Nombre Corto</th>
+                                    <th class="align-middle">Operador</th>
+                                    <th class="align-middle">Valor de la Operación</th>
+                                    <th class="align-middle">Acción</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -50,9 +50,10 @@
                                             <a href="{{ route('units.edit', $unit) }}" class="btn btn-primary btn-sm">
                                                 <i class="bi bi-pencil"></i>
                                             </a>
+                                            {{--
                                             <button id="delete" class="btn btn-danger btn-sm delete-confirm" onclick="
                                                 event.preventDefault();
-                                                if (confirm('Are you sure? It will delete the data permanently!')) {
+                                                if (confirm('¿Estás seguro? ¡Esto eliminará los datos permanentemente!')) {
                                                 document.getElementById('destroy{{ $unit->id }}').submit()
                                                 }
                                                 ">
@@ -63,6 +64,7 @@
                                                     @method('delete')
                                                 </form>
                                             </button>
+                                            --}}
                                         </td>
                                     </tr>
                                 @endforeach
@@ -86,8 +88,8 @@
                 {extend: 'excel',text: '<i class="bi bi-file-earmark-excel-fill"></i> Excel'},
                 {extend: 'csv',text: '<i class="bi bi-file-earmark-excel-fill"></i> CSV'},
                 {extend: 'print',
-                    text: '<i class="bi bi-printer-fill"></i> Print',
-                    title: "Units",
+                    text: '<i class="bi bi-printer-fill"></i> Imprimir',
+                    title: "Unidades",
                     exportOptions: {
                         columns: [ 0, 1, 2, 3, 4 ]
                     },

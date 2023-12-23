@@ -1,12 +1,14 @@
+{{ $ocultarCampos = true }}
+
 @extends('layouts.app')
 
-@section('title', 'Create Sale From Quotation')
+@section('title', 'Crear Venta desde Cotización')
 
 @section('breadcrumb')
     <ol class="breadcrumb border-0 m-0">
-        <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
-        <li class="breadcrumb-item"><a href="{{ route('quotations.index') }}">Quotations</a></li>
-        <li class="breadcrumb-item active">Make Sale</li>
+        <li class="breadcrumb-item"><a href="{{ route('home') }}">Inicio</a></li>
+        <li class="breadcrumb-item"><a href="{{ route('quotations.index') }}">Cotizaciones</a></li>
+        <li class="breadcrumb-item active">Realizar Venta</li>
     </ol>
 @endsection
 
@@ -29,14 +31,14 @@
                             <div class="form-row">
                                 <div class="col-lg-4">
                                     <div class="form-group">
-                                        <label for="reference">Reference <span class="text-danger">*</span></label>
+                                        <label for="reference">Referencia <span class="text-danger">*</span></label>
                                         <input type="text" class="form-control" name="reference" required readonly value="SL">
                                     </div>
                                 </div>
                                 <div class="col-lg-4">
                                     <div class="from-group">
                                         <div class="form-group">
-                                            <label for="customer_id">Customer <span class="text-danger">*</span></label>
+                                            <label for="customer_id">Cliente <span class="text-danger">*</span></label>
                                             <select class="form-control" name="customer_id" id="customer_id" required>
                                                 @foreach(\Modules\People\Entities\Customer::all() as $customer)
                                                     <option {{ $sale->customer_id == $customer->id ? 'selected' : '' }} value="{{ $customer->id }}">{{ $customer->customer_name }}</option>
@@ -48,7 +50,7 @@
                                 <div class="col-lg-4">
                                     <div class="from-group">
                                         <div class="form-group">
-                                            <label for="date">Date <span class="text-danger">*</span></label>
+                                            <label for="date">Fecha <span class="text-danger">*</span></label>
                                             <input type="date" class="form-control" name="date" required value="{{ now()->format('Y-m-d') }}">
                                         </div>
                                     </div>
@@ -57,34 +59,34 @@
 
                             <livewire:product-cart :cartInstance="'sale'" :data="$sale"/>
 
-                            <div class="form-row">
-                                <div class="col-lg-4">
+                            <div class="form-row" >
+                                <div class="col-lg-4" @if($ocultarCampos) hidden @endif>
                                     <div class="form-group">
-                                        <label for="status">Status <span class="text-danger">*</span></label>
-                                        <select class="form-control" name="status" id="status" required>
-                                            <option value="Pending">Pending</option>
-                                            <option value="Shipped">Shipped</option>
-                                            <option value="Completed">Completed</option>
+                                        <label for="status">Estado <span class="text-danger">*</span></label>
+                                        <select class="form-control" name="status" id="status" @if($ocultarCampos) hidden @endif required>
+                                            <option value="Pending">Pendiente</option>
+                                            <option value="Shipped">Enviado</option>
+                                            <option value="Completado" @if($ocultarCampos) selected @endif>Completado</option>
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-lg-4">
+                                <div class="col-lg-4" @if($ocultarCampos) hidden @endif>
                                     <div class="from-group">
                                         <div class="form-group">
-                                            <label for="payment_method">Payment Method <span class="text-danger">*</span></label>
-                                            <select class="form-control" name="payment_method" id="payment_method" required>
-                                                <option value="Cash">Cash</option>
-                                                <option value="Credit Card">Credit Card</option>
-                                                <option value="Bank Transfer">Bank Transfer</option>
+                                            <label for="payment_method">Método de Pago <span class="text-danger">*</span></label>
+                                            <select class="form-control" name="payment_method" id="payment_method" required @if($ocultarCampos) hidden @endif>
+                                                <option value="Efectivo" @if($ocultarCampos) selected @endif>Efectivo</option>
+                                                <option value="Credit Card">Tarjeta de Crédito</option>
+                                                <option value="Bank Transfer">Transferencia Bancaria</option>
                                                 <option value="Cheque">Cheque</option>
-                                                <option value="Other">Other</option>
+                                                <option value="Other">Otro</option>
                                             </select>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-lg-4">
                                     <div class="form-group">
-                                        <label for="paid_amount">Amount Received <span class="text-danger">*</span></label>
+                                        <label for="paid_amount">Monto Recibido <span class="text-danger">*</span></label>
                                         <div class="input-group">
                                             <input id="paid_amount" type="text" class="form-control" name="paid_amount" required>
                                             <div class="input-group-append">
@@ -98,7 +100,7 @@
                             </div>
 
                             <div class="form-group">
-                                <label for="note">Note (If Needed)</label>
+                                <label for="note">Nota (Si es necesario)</label>
                                 <textarea name="note" id="note" rows="5" class="form-control"></textarea>
                             </div>
 
@@ -106,7 +108,7 @@
 
                             <div class="mt-3">
                                 <button type="submit" class="btn btn-primary">
-                                    Create Sale <i class="bi bi-check"></i>
+                                    Crear Venta <i class="bi bi-check"></i>
                                 </button>
                             </div>
                         </form>

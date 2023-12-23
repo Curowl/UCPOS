@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\TurnoCajaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,5 +27,14 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::get('/payment-flow/chart-data', 'HomeController@paymentChart')
         ->name('payment-flow.chart');
+
+        // Rutas de caja
+        Route::resource('turnos', TurnoCajaController::class)->only(['index', 'create', 'store', 'show']);
+        Route::get('/turnos/{turno}/cerrar', 'TurnoCajaController@showCerrar')->name('turnos.cerrar.show');
+        Route::post('/turnos/{turno}/cerrar', 'TurnoCajaController@cerrar')->name('turnos.cerrar');
+
+
 });
+
+
 

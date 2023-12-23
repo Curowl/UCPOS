@@ -12,15 +12,57 @@ use Modules\Product\Entities\Product;
 use Modules\Product\Http\Requests\StoreProductRequest;
 use Modules\Product\Http\Requests\UpdateProductRequest;
 use Modules\Upload\Entities\Upload;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
 
 class ProductController extends Controller
 {
 
-    public function index(ProductDataTable $dataTable) {
+    /*public function index(ProductDataTable $dataTable) {
         abort_if(Gate::denies('access_products'), 403);
 
+
+
         return $dataTable->render('product::products.index');
+    }*/
+
+    public function index(ProductDataTable $dataTable, Request $request) {
+        abort_if(Gate::denies('access_products'), 403);
+
+        $showTrash = $request->has('showTrash') && $request->input('showTrash') == 'true';
+
+        return $dataTable->with(['showTrash' => $showTrash])->render('product::products.index', compact('showTrash'));
     }
+
+
+     /**
+     * Restaurar el producto eliminado.
+     *
+     * @param  \App\Models\Product  $product
+     * @return \Illuminate\Http\Response
+     */
+    public function restore($id)
+    {
+        abort_if(Gate::denies('delete_products'), 403);
+        // Buscar el producto eliminado suavemente con el ID proporcionado
+        $product = Product::withTrashed()->find($id);
+
+        // Verificar si se encontró el producto
+        if ($product) {
+            // Restaurar el producto
+            $product->restore();
+            toast('Producto Restaurado', 'success');
+        } else {
+            // Producto no encontrado
+            toast('Producto no encontrado', 'error');
+        }
+
+        // Redirigir a la vista de productos
+        return redirect()->route('products.index');
+    }
+
+
+
 
 
     public function create() {
@@ -39,7 +81,7 @@ class ProductController extends Controller
             }
         }
 
-        toast('Product Created!', 'success');
+        toast('Se creó un producto nuevo!', 'success');
 
         return redirect()->route('products.index');
     }
@@ -80,7 +122,7 @@ class ProductController extends Controller
             }
         }
 
-        toast('Product Updated!', 'info');
+        toast('Producto Actualizado!', 'info');
 
         return redirect()->route('products.index');
     }
@@ -89,10 +131,24 @@ class ProductController extends Controller
     public function destroy(Product $product) {
         abort_if(Gate::denies('delete_products'), 403);
 
+        // Verificar si el producto ya ha sido eliminado
+        if ($product->trashed()) {
+            toast('Este producto ya ha sido eliminado.', 'warning');
+            return redirect()->route('products.index');
+        }
+
+        // Eliminar el producto
         $product->delete();
 
-        toast('Product Deleted!', 'warning');
+        toast('Producto Deshabilitado!', 'warning');
 
         return redirect()->route('products.index');
+    }
+
+
+    public function getDataTable(Request $request, ProductDataTable $dataTable)
+    {
+        $dataTable->setShowTrash($request->get('showTrash') == 'true');
+        return $dataTable->ajax();
     }
 }

@@ -12,19 +12,19 @@
     <div class="table-responsive">
         <div wire:loading.flex class="col-12 position-absolute justify-content-center align-items-center" style="top:0;right:0;left:0;bottom:0;background-color: rgba(255,255,255,0.5);z-index: 99;">
             <div class="spinner-border text-primary" role="status">
-                <span class="sr-only">Loading...</span>
+                <span class="sr-only">Cargando...</span>
             </div>
         </div>
         <table class="table table-bordered">
             <thead>
             <tr class="align-middle">
                 <th class="align-middle">#</th>
-                <th class="align-middle">Product Name</th>
-                <th class="align-middle">Code</th>
+                <th class="align-middle">Nombre del producto</th>
+                <th class="align-middle">Código</th>
                 <th class="align-middle">Stock</th>
-                <th class="align-middle">Quantity</th>
-                <th class="align-middle">Type</th>
-                <th class="align-middle">Action</th>
+                <th class="align-middle">Cantidad</th>
+                <th class="align-middle">Tipo</th>
+                <th class="align-middle">Acciones</th>
             </tr>
             </thead>
             <tbody>
@@ -47,25 +47,25 @@
                             @if(isset($product['type']))
                                 @if($product['type'] == 'add')
                                     <select name="types[]" class="form-control">
-                                        <option value="add" selected>(+) Addition</option>
-                                        <option value="sub">(-) Subtraction</option>
+                                        <option value="add" selected>(+) Agregar</option>
+                                        <option value="sub">(-) Quitar</option>
                                     </select>
                                 @elseif($product['type'] == 'sub')
                                     <select name="types[]" class="form-control">
-                                        <option value="sub" selected>(-) Subtraction</option>
-                                        <option value="add">(+) Addition</option>
+                                        <option value="sub" selected>(-) Quitar</option>
+                                        <option value="add">(+) Agregar</option>
                                     </select>
                                 @endif
                             @else
                                 <select name="types[]" class="form-control">
-                                    <option value="add">(+) Addition</option>
-                                    <option value="sub">(-) Subtraction</option>
+                                    <option value="add">(+) Agregar</option>
+                                    <option value="sub">(-) Quitar</option>
                                 </select>
                             @endif
                         </td>
                         <td class="align-middle text-center">
                             <button type="button" class="btn btn-danger" wire:click="removeProduct({{ $key }})">
-                                <i class="bi bi-trash"></i>
+                                <i class="bi bi-x-lg"></i>
                             </button>
                         </td>
                     </tr>
@@ -74,7 +74,7 @@
                 <tr>
                     <td colspan="7" class="text-center">
                         <span class="text-danger">
-                            Please search & select products!
+                            Por favor busca y selecciona el producto
                         </span>
                     </td>
                 </tr>

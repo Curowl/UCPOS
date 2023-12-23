@@ -9,11 +9,11 @@
     <style>
         * {
             font-size: 12px;
-            line-height: 18px;
+            line-height: 14px;
             font-family: 'Ubuntu', sans-serif;
         }
-        h2 {
-            font-size: 16px;
+        h3 {
+            font-size: 12px;
         }
         td,
         th,
@@ -38,7 +38,7 @@
                 font-size:12px;
                 line-height: 20px;
             }
-            td,th {padding: 5px 0;}
+            td,th {padding: 4px 0;}
             .hidden-print {
                 display: none !important;
             }
@@ -57,25 +57,34 @@
 <div style="max-width:400px;margin:0 auto">
     <div id="receipt-data">
         <div class="centered">
-            <h2 style="margin-bottom: 5px">{{ settings()->company_name }}</h2>
 
-            <p style="font-size: 11px;line-height: 15px;margin-top: 0">
-                {{ settings()->company_email }}, {{ settings()->company_phone }}
+            <img width="80" src="{{ public_path('images/logo-dark-mini.png') }}" alt="Logo">
+            <h3 style="margin-bottom: 2px">{{ settings()->company_name }}</h3>
+
+            <p style="font-size: 9px;line-height: 12px;margin-top: 0">
+                <br><span>Ruc: 2020603760002K</span>
+               <br> {{ settings()->company_email }}, {{ settings()->company_phone }}
                 <br>{{ settings()->company_address }}
+
             </p>
         </div>
         <p>
-            Date: {{ \Carbon\Carbon::parse($sale->date)->format('d M, Y') }}<br>
-            Reference: {{ $sale->reference }}<br>
-            Name: {{ $sale->customer_name }}
+            Fecha: {{ \Carbon\Carbon::parse($sale->date)->format('d M, Y') }}<br>
+            Referencia: {{ $sale->reference }}<br>
+            Nombre: {{ $sale->customer_name }}
         </p>
         <table class="table-data">
             <tbody>
+
             @foreach($sale->saleDetails as $saleDetail)
                 <tr>
                     <td colspan="2">
-                        {{ $saleDetail->product->product_name }}
-                        ({{ $saleDetail->quantity }} x {{ format_currency($saleDetail->price) }})
+                        @if($saleDetail->product)
+                            {{ $saleDetail->product->product_name }}
+                            ({{ $saleDetail->quantity }} x {{ format_currency($saleDetail->price) }})
+                        @else
+                            Producto no disponible
+                        @endif
                     </td>
                     <td style="text-align:right;vertical-align:bottom">{{ format_currency($saleDetail->sub_total) }}</td>
                 </tr>
@@ -83,24 +92,24 @@
 
             @if($sale->tax_percentage)
                 <tr>
-                    <th colspan="2" style="text-align:left">Tax ({{ $sale->tax_percentage }}%)</th>
+                    <th colspan="2" style="text-align:left">Impuesto ({{ $sale->tax_percentage }}%)</th>
                     <th style="text-align:right">{{ format_currency($sale->tax_amount) }}</th>
                 </tr>
             @endif
             @if($sale->discount_percentage)
                 <tr>
-                    <th colspan="2" style="text-align:left">Discount ({{ $sale->discount_percentage }}%)</th>
+                    <th colspan="2" style="text-align:left">Descuento ({{ $sale->discount_percentage }}%)</th>
                     <th style="text-align:right">{{ format_currency($sale->discount_amount) }}</th>
                 </tr>
             @endif
             @if($sale->shipping_amount)
                 <tr>
-                    <th colspan="2" style="text-align:left">Shipping</th>
+                    <th colspan="2" style="text-align:left">Envío</th>
                     <th style="text-align:right">{{ format_currency($sale->shipping_amount) }}</th>
                 </tr>
             @endif
             <tr>
-                <th colspan="2" style="text-align:left">Grand Total</th>
+                <th colspan="2" style="text-align:left">Total</th>
                 <th style="text-align:right">{{ format_currency($sale->total_amount) }}</th>
             </tr>
             </tbody>
@@ -109,12 +118,14 @@
             <tbody>
                 <tr style="background-color:#ddd;">
                     <td class="centered" style="padding: 5px;">
-                        Paid By: {{ $sale->payment_method }}
+                        Pagado con: {{ $sale->payment_method }}
                     </td>
                     <td class="centered" style="padding: 5px;">
-                        Amount: {{ format_currency($sale->paid_amount) }}
+                        Monto: {{ format_currency($sale->paid_amount) }}
                     </td>
+
                 </tr>
+
                 <tr style="border-bottom: 0;">
                     <td class="centered" colspan="3">
                         <div style="margin-top: 10px;">
@@ -122,6 +133,11 @@
                         </div>
                     </td>
                 </tr>
+
+                <tr  style="border-bottom: 0;">
+                    Vendedor: <strong>{{ auth()->user()->name }}</strong>
+                </tr>
+
             </tbody>
         </table>
     </div>
@@ -129,3 +145,4 @@
 
 </body>
 </html>
+

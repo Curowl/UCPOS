@@ -5,7 +5,7 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Quotation Details</title>
+    <title>Detalle de proforma</title>
     <link rel="stylesheet" href="{{ asset('b3/bootstrap.min.css') }}">
 </head>
 <body>
@@ -22,7 +22,7 @@
                 <div class="card-body">
                     <div class="row mb-4">
                         <div class="col-md-6 mb-3 mb-md-0">
-                            <h4 class="mb-2" style="border-bottom: 1px solid #dddddd;padding-bottom: 10px;">Company Info:</h4>
+                            <h4 class="mb-2" style="border-bottom: 1px solid #dddddd;padding-bottom: 10px;">Información de la compañia:</h4>
                             <div><strong>{{ settings()->company_name }}</strong></div>
                             <div>{{ settings()->company_address }}</div>
                             <div>Email: {{ settings()->company_email }}</div>
@@ -30,7 +30,7 @@
                         </div>
 
                         <div class="col-md-6 mb-3 mb-md-0">
-                            <h4 class="mb-2" style="border-bottom: 1px solid #dddddd;padding-bottom: 10px;">Customer Info:</h4>
+                            <h4 class="mb-2" style="border-bottom: 1px solid #dddddd;padding-bottom: 10px;">Información del Cliente:</h4>
                             <div><strong>{{ $customer->customer_name }}</strong></div>
                             <div>{{ $customer->address }}</div>
                             <div>Email: {{ $customer->customer_email }}</div>
@@ -42,11 +42,11 @@
                         <table class="table table-striped">
                             <thead>
                             <tr>
-                                <th class="align-middle">Product</th>
-                                <th class="align-middle">Net Unit Price</th>
-                                <th class="align-middle">Quantity</th>
-                                <th class="align-middle">Discount</th>
-                                <th class="align-middle">Tax</th>
+                                <th class="align-middle">Producto</th>
+                                <th class="align-middle">Precio Neto de la Unidad</th>
+                                <th class="align-middle">Cantidad</th>
+                                <th class="align-middle">Descuento</th>
+                                <th class="align-middle">Impuestos</th>
                                 <th class="align-middle">Sub Total</th>
                             </tr>
                             </thead>

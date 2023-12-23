@@ -11,6 +11,7 @@ use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\File;
 use Spatie\Permission\Traits\HasRoles;
+use App\Models\TurnoCaja;
 
 class User extends Authenticatable implements HasMedia
 {
@@ -58,4 +59,14 @@ class User extends Authenticatable implements HasMedia
     public function scopeIsActive(Builder $builder) {
         return $builder->where('is_active', 1);
     }
+
+    
+    public function turnoCajas()
+    {
+        return $this->hasMany(TurnoCaja::class, 'usuario_id', 'id');
+    }
+
+  
+
+   
 }

@@ -37,26 +37,44 @@ class ProductCategoriesDataTable extends DataTable
                 Button::make('excel')
                     ->text('<i class="bi bi-file-earmark-excel-fill"></i> Excel'),
                 Button::make('print')
-                    ->text('<i class="bi bi-printer-fill"></i> Print'),
+                    ->text('<i class="bi bi-printer-fill"></i> Imprimir'),
                 Button::make('reset')
-                    ->text('<i class="bi bi-x-circle"></i> Reset'),
+                    ->text('<i class="bi bi-x-circle"></i> Resetear'),
                 Button::make('reload')
-                    ->text('<i class="bi bi-arrow-repeat"></i> Reload')
-            );
+                    ->text('<i class="bi bi-arrow-repeat"></i> Recargar')
+            )
+            ->language([
+                'lengthMenu' => 'Mostrar _MENU_ entradas por página',
+                'zeroRecords' => 'No se encontraron registros coincidentes',
+                'info' => 'Mostrando _START_ a _END_ de _TOTAL_ entradas',
+                'infoEmpty' => 'Mostrando 0 a 0 de 0 entradas',
+                'infoFiltered' => '(filtrado de _MAX_ entradas totales)',
+                'search' => 'Buscar:',
+                'paginate' => [
+                    'first' => 'Primero',
+                    'last' => 'Último',
+                    'next' => 'Siguiente',
+                    'previous' => 'Anterior',
+                ],
+            ]);
     }
 
     protected function getColumns() {
         return [
             Column::make('category_code')
+                ->title('Código Categoría')
                 ->addClass('text-center'),
 
             Column::make('category_name')
+                ->title('Nombre de la Categoría')
                 ->addClass('text-center'),
 
             Column::make('products_count')
+                ->title('Número de Productos')
                 ->addClass('text-center'),
 
             Column::computed('action')
+            ->title('Acciones')
                 ->exportable(false)
                 ->printable(false)
                 ->addClass('text-center'),

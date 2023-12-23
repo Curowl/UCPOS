@@ -34,76 +34,88 @@ class SalesReturnController extends Controller
     }
 
 
-    public function store(StoreSaleReturnRequest $request) {
-        DB::transaction(function () use ($request) {
-            $due_amount = $request->total_amount - $request->paid_amount;
+    public function store(StoreSaleReturnRequest $request): \Illuminate\Http\RedirectResponse
+    {
+        try {
+            DB::transaction(function () use ($request) {
+                $due_amount = $request->total_amount - $request->paid_amount;
 
-            if ($due_amount == $request->total_amount) {
-                $payment_status = 'Unpaid';
-            } elseif ($due_amount > 0) {
-                $payment_status = 'Partial';
-            } else {
-                $payment_status = 'Paid';
-            }
+                // Validación
+                if ($request->paid_amount < $request->total_amount) {
+                    throw new \Exception('El monto recibido no puede ser menor al total.');
+                }
 
-            $sale_return = SaleReturn::create([
-                'date' => $request->date,
-                'customer_id' => $request->customer_id,
-                'customer_name' => Customer::findOrFail($request->customer_id)->customer_name,
-                'tax_percentage' => $request->tax_percentage,
-                'discount_percentage' => $request->discount_percentage,
-                'shipping_amount' => $request->shipping_amount * 100,
-                'paid_amount' => $request->paid_amount * 100,
-                'total_amount' => $request->total_amount * 100,
-                'due_amount' => $due_amount * 100,
-                'status' => $request->status,
-                'payment_status' => $payment_status,
-                'payment_method' => $request->payment_method,
-                'note' => $request->note,
-                'tax_amount' => Cart::instance('sale_return')->tax() * 100,
-                'discount_amount' => Cart::instance('sale_return')->discount() * 100,
-            ]);
+                if ($due_amount == $request->total_amount) {
+                    $payment_status = 'Unpaid';
+                } elseif ($due_amount > 0) {
+                    $payment_status = 'Partial';
+                } else {
+                    $payment_status = 'Paid';
+                }
 
-            foreach (Cart::instance('sale_return')->content() as $cart_item) {
-                SaleReturnDetail::create([
-                    'sale_return_id' => $sale_return->id,
-                    'product_id' => $cart_item->id,
-                    'product_name' => $cart_item->name,
-                    'product_code' => $cart_item->options->code,
-                    'quantity' => $cart_item->qty,
-                    'price' => $cart_item->price * 100,
-                    'unit_price' => $cart_item->options->unit_price * 100,
-                    'sub_total' => $cart_item->options->sub_total * 100,
-                    'product_discount_amount' => $cart_item->options->product_discount * 100,
-                    'product_discount_type' => $cart_item->options->product_discount_type,
-                    'product_tax_amount' => $cart_item->options->product_tax * 100,
+                $sale_return = SaleReturn::create([
+                    'date' => $request->date,
+                    'customer_id' => $request->customer_id,
+                    'customer_name' => Customer::findOrFail($request->customer_id)->customer_name,
+                    'tax_percentage' => $request->tax_percentage,
+                    'discount_percentage' => $request->discount_percentage,
+                    'shipping_amount' => $request->shipping_amount * 100,
+                    'paid_amount' => $request->paid_amount * 100,
+                    'total_amount' => $request->total_amount * 100,
+                    'due_amount' => $due_amount * 100,
+                    'status' => $request->status,
+                    'payment_status' => $payment_status,
+                    'payment_method' => $request->payment_method,
+                    'note' => $request->note,
+                    'tax_amount' => Cart::instance('sale_return')->tax() * 100,
+                    'discount_amount' => Cart::instance('sale_return')->discount() * 100,
                 ]);
 
-                if ($request->status == 'Completed') {
-                    $product = Product::findOrFail($cart_item->id);
-                    $product->update([
-                        'product_quantity' => $product->product_quantity + $cart_item->qty
+                foreach (Cart::instance('sale_return')->content() as $cart_item) {
+                    SaleReturnDetail::create([
+                        'sale_return_id' => $sale_return->id,
+                        'product_id' => $cart_item->id,
+                        'product_name' => $cart_item->name,
+                        'product_code' => $cart_item->options->code,
+                        'quantity' => $cart_item->qty,
+                        'price' => $cart_item->price * 100,
+                        'unit_price' => $cart_item->options->unit_price * 100,
+                        'sub_total' => $cart_item->options->sub_total * 100,
+                        'product_discount_amount' => $cart_item->options->product_discount * 100,
+                        'product_discount_type' => $cart_item->options->product_discount_type,
+                        'product_tax_amount' => $cart_item->options->product_tax * 100,
+                    ]);
+
+                    if ($request->status == 'Completed') {
+                        $product = Product::findOrFail($cart_item->id);
+                        $product->update([
+                            'product_quantity' => $product->product_quantity + $cart_item->qty
+                        ]);
+                    }
+                }
+
+                Cart::instance('sale_return')->destroy();
+
+                if ($sale_return->paid_amount > 0) {
+                    SaleReturnPayment::create([
+                        'date' => $request->date,
+                        'reference' => 'INV/'.$sale_return->reference,
+                        'amount' => $sale_return->paid_amount,
+                        'sale_return_id' => $sale_return->id,
+                        'payment_method' => $request->payment_method
                     ]);
                 }
-            }
+            });
 
-            Cart::instance('sale_return')->destroy();
+            toast('Se creó el retorno de venta!', 'success');
 
-            if ($sale_return->paid_amount > 0) {
-                SaleReturnPayment::create([
-                    'date' => $request->date,
-                    'reference' => 'INV/'.$sale_return->reference,
-                    'amount' => $sale_return->paid_amount,
-                    'sale_return_id' => $sale_return->id,
-                    'payment_method' => $request->payment_method
-                ]);
-            }
-        });
-
-        toast('Sale Return Created!', 'success');
-
-        return redirect()->route('sale-returns.index');
+            return redirect()->route('sale-returns.index');
+        } catch (\Exception $e) {
+            toast($e->getMessage(), 'error');
+            return redirect()->route('sale-returns.create');
+        }
     }
+
 
 
     public function show(SaleReturn $sale_return) {

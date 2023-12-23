@@ -5,6 +5,7 @@ namespace App\Livewire\Reports;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Modules\Sale\Entities\Sale;
+use Barryvdh\Snappy\Facades\SnappyPdf;
 
 class SalesReport extends Component
 {
@@ -24,6 +25,8 @@ class SalesReport extends Component
         'start_date' => 'required|date|before:end_date',
         'end_date'   => 'required|date|after:start_date',
     ];
+
+
 
     public function mount($customers) {
         $this->customers = $customers;
@@ -49,8 +52,34 @@ class SalesReport extends Component
             ->orderBy('date', 'desc')->paginate(10);
 
         return view('livewire.reports.sales-report', [
-            'sales' => $sales
+            'sales' => $sales,
+            'start_date' => $this->start_date,
+            'end_date' => $this->end_date,
         ]);
+    }
+
+    public function generatePdf() {
+        // Obtén los datos necesarios para el PDF (puedes ajustar esto según tus necesidades)
+        $sales = Sale::whereDate('date', '>=', $this->start_date)
+            ->whereDate('date', '<=', $this->end_date)
+            ->when($this->customer_id, function ($query) {
+                return $query->where('customer_id', $this->customer_id);
+            })
+            ->when($this->sale_status, function ($query) {
+                return $query->where('status', $this->sale_status);
+            })
+            ->when($this->payment_status, function ($query) {
+                return $query->where('payment_status', $this->payment_status);
+            })
+            ->orderBy('date', 'desc')->get();
+
+        // Cargar la vista PDF y pasar los datos
+        $pdf = \PDF::loadView('livewire.reports.PDF.sales-report-pdf', [
+            'sales' => $sales
+        ])->setPaper('a4');
+
+        // Mostrar el PDF en el navegador
+        return $pdf->stream('reporte-de-ventas.pdf');
     }
 
     public function generateReport() {

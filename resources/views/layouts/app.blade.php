@@ -9,7 +9,64 @@
     <!-- Favicon -->
     <link rel="icon" href="{{ asset('images/favicon.png') }}">
 
-    @include('includes.main-css')
+
+
+    <style>
+        /* Estilos para el sidebar normal */
+        #sidebar {
+            background-color: #1b1811; /* Color del fondo del sidebar */
+        }
+
+        .custom-ul {
+            background-color: #3b3832; /* Color del fondo de los elementos ul */
+            /* Otros estilos para los elementos ul si es necesario */
+        }
+
+        .c-sidebar-nav-item.c-active,
+        #sidebar.c-sidebar-minimized .c-sidebar-nav-item.c-active {
+            background-color: #685c3e !important;
+        }
+
+        .c-sidebar-nav-item.c-active  {
+            background-color: #685c3e !important;
+        }
+
+
+      .c-active {
+            background-color: #685c3e !important;
+        }
+
+        /* Cambiar color de fondo al hacer hover */
+        .c-sidebar-nav-item:not(.c-active) a.c-sidebar-nav-link:hover {
+            background-color: #685c3e;
+        }
+
+        /* Estilos para el sidebar minimizado */
+        #sidebar.c-sidebar-minimized {
+            background-color: #1b1811; /* Color del fondo del sidebar minimizado */
+        }
+
+        #sidebar.c-sidebar-minimized .custom-ul {
+            background-color: #3b3832; /* Color del fondo de los elementos ul en el sidebar minimizado */
+        }
+
+        #sidebar.c-sidebar-minimized .c-sidebar-nav-item {
+            background-color: #1b1811; /* Color del fondo de los elementos en el sidebar minimizado */
+        }
+
+        #sidebar.c-sidebar-minimized .c-sidebar-nav-item.c-active {
+            background-color: #685c3e !important;
+        }
+
+        /* Cambiar color de fondo al hacer hover en el sidebar minimizado */
+        #sidebar.c-sidebar-minimized .c-sidebar-nav-item:not(.c-active) a.c-sidebar-nav-link:hover {
+            background-color: #685c3e;
+        }
+    </style>
+
+
+
+     @include('includes.main-css')
 </head>
 
 <body class="c-app">

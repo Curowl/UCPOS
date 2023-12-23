@@ -12,12 +12,21 @@ use Yajra\DataTables\Services\DataTable;
 class ProductDataTable extends DataTable
 {
 
+    
+
     public function dataTable($query)
     {
         return datatables()
             ->eloquent($query)->with('category')
-            ->addColumn('action', function ($data) {
+            /*->addColumn('action', function ($data) {
                 return view('product::products.partials.actions', compact('data'));
+            })*/
+            ->addColumn('action', function ($data) {
+                $view = 'product::products.partials.actions';
+                if ($data->trashed()) {
+                    $view = 'product::products.partials.actions_trashed';
+                }
+                return view($view, compact('data'));
             })
             ->addColumn('product_image', function ($data) {
                 $url = $data->getFirstMediaUrl('images', 'thumb');
@@ -37,7 +46,13 @@ class ProductDataTable extends DataTable
 
     public function query(Product $model)
     {
-        return $model->newQuery()->with('category');
+        $query = $model->newQuery()->with('category');
+
+        if ($this->showTrash) {
+            $query->onlyTrashed();
+        }
+
+        return $query;
     }
 
     public function html()
@@ -50,15 +65,29 @@ class ProductDataTable extends DataTable
                                 'tr' .
                                 <'row'<'col-md-5'i><'col-md-7 mt-2'p>>")
                     ->orderBy(7)
+                    ->language([
+                        'lengthMenu' => 'Mostrar _MENU_ entradas por página',
+                        'zeroRecords' => 'No se encontraron registros coincidentes',
+                        'info' => 'Mostrando _START_ a _END_ de _TOTAL_ entradas',
+                        'infoEmpty' => 'Mostrando 0 a 0 de 0 entradas',
+                        'infoFiltered' => '(filtrado de _MAX_ entradas totales)',
+                        'search' => 'Buscar:',
+                        'paginate' => [
+                            'first' => 'Primero',
+                            'last' => 'Último',
+                            'next' => 'Siguiente',
+                            'previous' => 'Anterior',
+                        ],
+                    ])
                     ->buttons(
                         Button::make('excel')
                             ->text('<i class="bi bi-file-earmark-excel-fill"></i> Excel'),
                         Button::make('print')
-                            ->text('<i class="bi bi-printer-fill"></i> Print'),
+                            ->text('<i class="bi bi-printer-fill"></i> Imprimir'),
                         Button::make('reset')
-                            ->text('<i class="bi bi-x-circle"></i> Reset'),
+                            ->text('<i class="bi bi-x-circle"></i> Resetear'),
                         Button::make('reload')
-                            ->text('<i class="bi bi-arrow-repeat"></i> Reload')
+                            ->text('<i class="bi bi-arrow-repeat"></i> Recargar')
                     );
     }
 
@@ -66,39 +95,41 @@ class ProductDataTable extends DataTable
     {
         return [
             Column::computed('product_image')
-                ->title('Image')
+                ->title('Imagen')
                 ->className('text-center align-middle'),
 
             Column::make('category.category_name')
-                ->title('Category')
+                ->title('Categoría')
                 ->className('text-center align-middle'),
 
             Column::make('product_code')
-                ->title('Code')
+                ->title('Código')
                 ->className('text-center align-middle'),
 
             Column::make('product_name')
-                ->title('Name')
+                ->title('Nombre')
                 ->className('text-center align-middle'),
 
             Column::computed('product_cost')
-                ->title('Cost')
+                ->title('Costo')
                 ->className('text-center align-middle'),
 
             Column::computed('product_price')
-                ->title('Price')
+                ->title('Precio')
                 ->className('text-center align-middle'),
 
             Column::computed('product_quantity')
-                ->title('Quantity')
+                ->title('Cantidad')
                 ->className('text-center align-middle'),
 
             Column::computed('action')
+                ->title('Acciones')
                 ->exportable(false)
                 ->printable(false)
                 ->className('text-center align-middle'),
 
             Column::make('created_at')
+                ->title('Creado')
                 ->visible(false)
         ];
     }

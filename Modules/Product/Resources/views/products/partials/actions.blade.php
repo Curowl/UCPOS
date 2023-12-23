@@ -11,11 +11,11 @@
 @can('delete_products')
 <button id="delete" class="btn btn-danger btn-sm" onclick="
     event.preventDefault();
-    if (confirm('Are you sure? It will delete the data permanently!')) {
+    if (confirm('¿Está seguro que quiere deshabilitar este dato?')) {
         document.getElementById('destroy{{ $data->id }}').submit()
     }
     ">
-    <i class="bi bi-trash"></i>
+    <i class="bi bi-x-lg"></i>
     <form id="destroy{{ $data->id }}" class="d-none" action="{{ route('products.destroy', $data->id) }}" method="POST">
         @csrf
         @method('delete')

@@ -33,8 +33,8 @@
                 <div class="card-body">
                     <form id="login" method="post" action="{{ url('/login') }}">
                         @csrf
-                        <h1>Login</h1>
-                        <p class="text-muted">Sign In to your account</p>
+                        <h1>Inicio</h1>
+                        <p class="text-muted">Inicia Sesión</p>
                         <div class="input-group mb-3">
                             <div class="input-group-prepend">
                                     <span class="input-group-text">
@@ -43,7 +43,7 @@
                             </div>
                             <input id="email" type="email" class="form-control @error('email') is-invalid @enderror"
                                    name="email" value="{{ old('email') }}"
-                                   placeholder="Email">
+                                   placeholder="Escribe aquí tu correo electrónico">
                             @error('email')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -56,7 +56,7 @@
                             </div>
                             <input id="password" type="password"
                                    class="form-control @error('password') is-invalid @enderror"
-                                   placeholder="Password" name="password">
+                                   placeholder="Escribe aquí tu contraseña" name="password">
                             @error('password')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -65,7 +65,7 @@
                             <div class="col-4">
                                 <button id="submit" class="btn btn-primary px-4 d-flex align-items-center"
                                         type="submit">
-                                    Login
+                                    Iniciar
                                     <div id="spinner" class="spinner-border text-info" role="status"
                                          style="height: 20px;width: 20px;margin-left: 5px;display: none;">
                                         <span class="sr-only">Loading...</span>
@@ -74,7 +74,7 @@
                             </div>
                             <div class="col-8 text-right">
                                 <a class="btn btn-link px-0" href="{{ route('password.request') }}">
-                                    Forgot password?
+                                    ¿Olvidaste tu contraseña?
                                 </a>
                             </div>
                         </div>
@@ -83,8 +83,8 @@
             </div>
 
             <p class="text-center mt-5 lead">
-                Developed By
-                <a href="https://fahimanzam.netlify.app" class="font-weight-bold text-primary">Fahim Anzam Dip</a>
+                Desarrollado por
+                <a href="" class="font-weight-bold text-primary">...</a>
             </p>
         </div>
     </div>

@@ -161,11 +161,14 @@ class ProfitLossReport extends Component
             })
             ->with('saleDetails')->get();
 
-        foreach ($sales as $sale) {
-            foreach ($sale->saleDetails as $saleDetail) {
-                $product_costs += $saleDetail->product->product_cost;
+            foreach ($sales as $sale) {
+                foreach ($sale->saleDetails as $saleDetail) {
+                    // Verificar si el producto existe antes de acceder a sus propiedades
+                    if ($saleDetail->product && $saleDetail->product->product_cost) {
+                        $product_costs += $saleDetail->product->product_cost;
+                    }
+                }
             }
-        }
 
         $profit = $revenue - $product_costs;
 

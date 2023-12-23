@@ -32,7 +32,7 @@ class CategoriesController extends Controller
             'category_name' => $request->category_name,
         ]);
 
-        toast('Product Category Created!', 'success');
+        toast('Se creó la categoría del producto!', 'success');
 
         return redirect()->back();
     }
@@ -60,7 +60,7 @@ class CategoriesController extends Controller
             'category_name' => $request->category_name,
         ]);
 
-        toast('Product Category Updated!', 'info');
+        toast('Categoría actualizada!', 'info');
 
         return redirect()->route('product-categories.index');
     }

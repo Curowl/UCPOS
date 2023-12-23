@@ -72,7 +72,7 @@ class Checkout extends Component
         });
 
         if ($exists->isNotEmpty()) {
-            session()->flash('message', 'Product exists in the cart!');
+            session()->flash('message', 'El producto ya existe en el carrito!');
 
             return;
         }

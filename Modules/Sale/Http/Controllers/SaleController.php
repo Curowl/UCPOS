@@ -14,6 +14,8 @@ use Modules\Sale\Entities\SaleDetails;
 use Modules\Sale\Entities\SalePayment;
 use Modules\Sale\Http\Requests\StoreSaleRequest;
 use Modules\Sale\Http\Requests\UpdateSaleRequest;
+use App\Models\TurnoCaja;
+
 
 class SaleController extends Controller
 {
@@ -34,76 +36,98 @@ class SaleController extends Controller
     }
 
 
-    public function store(StoreSaleRequest $request) {
-        DB::transaction(function () use ($request) {
-            $due_amount = $request->total_amount - $request->paid_amount;
+    public function store(StoreSaleRequest $request): \Illuminate\Http\RedirectResponse
+    {
+        try {
+            DB::transaction(function () use ($request) {
+                $due_amount = $request->total_amount - $request->paid_amount;
 
-            if ($due_amount == $request->total_amount) {
-                $payment_status = 'Unpaid';
-            } elseif ($due_amount > 0) {
-                $payment_status = 'Partial';
-            } else {
-                $payment_status = 'Paid';
-            }
+                // Validación
+                if ($request->paid_amount < $request->total_amount) {
+                    throw new \Exception('El monto recibido no puede ser menor al total.');
+                }
 
-            $sale = Sale::create([
-                'date' => $request->date,
-                'customer_id' => $request->customer_id,
-                'customer_name' => Customer::findOrFail($request->customer_id)->customer_name,
-                'tax_percentage' => $request->tax_percentage,
-                'discount_percentage' => $request->discount_percentage,
-                'shipping_amount' => $request->shipping_amount * 100,
-                'paid_amount' => $request->paid_amount * 100,
-                'total_amount' => $request->total_amount * 100,
-                'due_amount' => $due_amount * 100,
-                'status' => $request->status,
-                'payment_status' => $payment_status,
-                'payment_method' => $request->payment_method,
-                'note' => $request->note,
-                'tax_amount' => Cart::instance('sale')->tax() * 100,
-                'discount_amount' => Cart::instance('sale')->discount() * 100,
-            ]);
+                if ($due_amount == $request->total_amount) {
+                    $payment_status = 'Unpaid';
+                } elseif ($due_amount > 0) {
+                    $payment_status = 'Partial';
+                } else {
+                    $payment_status = 'Paid';
+                }
 
-            foreach (Cart::instance('sale')->content() as $cart_item) {
-                SaleDetails::create([
-                    'sale_id' => $sale->id,
-                    'product_id' => $cart_item->id,
-                    'product_name' => $cart_item->name,
-                    'product_code' => $cart_item->options->code,
-                    'quantity' => $cart_item->qty,
-                    'price' => $cart_item->price * 100,
-                    'unit_price' => $cart_item->options->unit_price * 100,
-                    'sub_total' => $cart_item->options->sub_total * 100,
-                    'product_discount_amount' => $cart_item->options->product_discount * 100,
-                    'product_discount_type' => $cart_item->options->product_discount_type,
-                    'product_tax_amount' => $cart_item->options->product_tax * 100,
+                $sale = Sale::create([
+                    'date' => $request->date,
+                    'customer_id' => $request->customer_id,
+                    'customer_name' => Customer::findOrFail($request->customer_id)->customer_name,
+                    'tax_percentage' => $request->tax_percentage,
+                    'discount_percentage' => $request->discount_percentage,
+                    'shipping_amount' => $request->shipping_amount * 100,
+                    'paid_amount' => $request->paid_amount * 100,
+                    'total_amount' => $request->total_amount * 100,
+                    'due_amount' => $due_amount * 100,
+                    'status' => $request->status,
+                    'payment_status' => $payment_status,
+                    'payment_method' => $request->payment_method,
+                    'note' => $request->note,
+                    'tax_amount' => Cart::instance('sale')->tax() * 100,
+                    'discount_amount' => Cart::instance('sale')->discount() * 100,
                 ]);
 
-                if ($request->status == 'Shipped' || $request->status == 'Completed') {
-                    $product = Product::findOrFail($cart_item->id);
-                    $product->update([
-                        'product_quantity' => $product->product_quantity - $cart_item->qty
+                foreach (Cart::instance('sale')->content() as $cart_item) {
+                    SaleDetails::create([
+                        'sale_id' => $sale->id,
+                        'product_id' => $cart_item->id,
+                        'product_name' => $cart_item->name,
+                        'product_code' => $cart_item->options->code,
+                        'quantity' => $cart_item->qty,
+                        'price' => $cart_item->price * 100,
+                        'unit_price' => $cart_item->options->unit_price * 100,
+                        'sub_total' => $cart_item->options->sub_total * 100,
+                        'product_discount_amount' => $cart_item->options->product_discount * 100,
+                        'product_discount_type' => $cart_item->options->product_discount_type,
+                        'product_tax_amount' => $cart_item->options->product_tax * 100,
+                    ]);
+
+                    if ($request->status == 'Shipped' || $request->status == 'Completed') {
+                        $product = Product::findOrFail($cart_item->id);
+                        $product->update([
+                            'product_quantity' => $product->product_quantity - $cart_item->qty
+                        ]);
+                    }
+                }
+
+                // Obtener el turno de caja abierto para el usuario actual
+                $turnoAbierto = TurnoCaja::where('usuario_id', auth()->user()->id)->where('estado', 'abierto')->first();
+
+                if ($turnoAbierto) {
+                    $sale->turno_caja_id = $turnoAbierto->id;
+                    $sale->save();
+                } else {
+                    // Manejar la ausencia de un turno abierto
+                }
+
+                Cart::instance('sale')->destroy();
+
+                if ($sale->paid_amount > 0) {
+                    SalePayment::create([
+                        'date' => $request->date,
+                        'reference' => 'INV/'.$sale->reference,
+                        'amount' => $sale->paid_amount,
+                        'sale_id' => $sale->id,
+                        'payment_method' => $request->payment_method
                     ]);
                 }
-            }
+            });
 
-            Cart::instance('sale')->destroy();
+            toast('Sale Created!', 'success');
 
-            if ($sale->paid_amount > 0) {
-                SalePayment::create([
-                    'date' => $request->date,
-                    'reference' => 'INV/'.$sale->reference,
-                    'amount' => $sale->paid_amount,
-                    'sale_id' => $sale->id,
-                    'payment_method' => $request->payment_method
-                ]);
-            }
-        });
-
-        toast('Sale Created!', 'success');
-
-        return redirect()->route('sales.index');
+            return redirect()->route('sales.index');
+        } catch (\Exception $e) {
+            toast($e->getMessage(), 'error');
+            return redirect()->route('sales.create');
+        }
     }
+
 
 
     public function show(Sale $sale) {

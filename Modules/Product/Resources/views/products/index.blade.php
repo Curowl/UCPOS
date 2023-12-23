@@ -8,22 +8,30 @@
 
 @section('breadcrumb')
     <ol class="breadcrumb border-0 m-0">
-        <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
-        <li class="breadcrumb-item active">Products</li>
+        <li class="breadcrumb-item"><a href="{{ route('home') }}">Inicio</a></li>
+        <li class="breadcrumb-item active">Productos</li>
     </ol>
 @endsection
 
 @section('content')
     <div class="container-fluid">
+
+        @if($errors->any())
+            <div class="alert alert-danger">
+                {{ $errors->first() }}
+            </div>
+        @endif
+
+
         <div class="row">
             <div class="col-12">
                 <div class="card">
                     <div class="card-body">
-                        <a href="{{ route('products.create') }}" class="btn btn-primary">
-                            Add Product <i class="bi bi-plus"></i>
-                        </a>
 
-                        <hr>
+                        <div class="custom-control custom-switch mb-3">
+                            <input type="checkbox" class="custom-control-input" id="toggleTrash" {{ $showTrash ? 'checked' : '' }}>
+                            <label class="custom-control-label" for="toggleTrash">Mostrar Productos Deshabilitados</label>
+                        </div>
 
                         <div class="table-responsive">
                             {!! $dataTable->table() !!}
@@ -37,4 +45,13 @@
 
 @push('page_scripts')
     {!! $dataTable->scripts() !!}
+    <script>
+        document.getElementById('toggleTrash').addEventListener('change', function () {
+            window.location.href = '{{ route('products.index') }}?showTrash=' + this.checked;
+        });
+
+    </script>
+
+
 @endpush
+

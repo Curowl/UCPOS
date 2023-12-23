@@ -5,6 +5,7 @@ namespace Modules\Sale\Entities;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
+
 class Sale extends Model
 {
     use HasFactory;
@@ -55,4 +56,12 @@ class Sale extends Model
     public function getDiscountAmountAttribute($value) {
         return $value / 100;
     }
+
+    
+    public function turnoCaja()
+    {
+        // Ajusta la relación para que Laravel pueda inferir la clave foránea
+        return $this->belongsTo(TurnoCaja::class, 'turno_caja_id');
+    }
+        
 }

@@ -6,7 +6,7 @@
 @can('access_purchase_return_payments')
     <button id="delete" class="btn btn-danger btn-sm" onclick="
         event.preventDefault();
-        if (confirm('Are you sure? It will delete the data permanently!')) {
+        if (confirm('¿Está seguro que quiere eliminar este dato?')) {
         document.getElementById('destroy{{ $data->id }}').submit()
         }
         ">

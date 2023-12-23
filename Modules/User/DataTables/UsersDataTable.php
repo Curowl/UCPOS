@@ -25,9 +25,9 @@ class UsersDataTable extends DataTable
             })
             ->addColumn('status', function ($data) {
                 if ($data->is_active == 1) {
-                    $html = '<span class="badge badge-success">Active</span>';
+                    $html = '<span class="badge badge-success">Activo</span>';
                 } else {
-                    $html = '<span class="badge badge-warning">Deactivated</span>';
+                    $html = '<span class="badge badge-danger">Inactivo</span>';
                 }
 
                 return $html;
@@ -40,13 +40,32 @@ class UsersDataTable extends DataTable
             ->rawColumns(['image', 'status']);
     }
 
-    public function query(User $model) {
+    /*public function query(User $model) {
         return $model->newQuery()
             ->with(['roles' => function ($query) {
                 $query->select('name')->get();
             }])
             ->where('id', '!=', auth()->id());
+    }*/
+
+    public function query(User $model)
+    {
+        return $model->newQuery()
+            ->with(['roles' => function ($query) {
+                $query->select('name')->get();
+            }])
+            ->where('id', '!=', auth()->id())
+            ->when(request('mostrarInactivos'), function ($query) {
+                // Si mostrarInactivos es true (1), incluye usuarios inactivos
+                return $query->Where('is_active', 2);
+            }, function ($query) {
+                // Si mostrarInactivos no está presente o es false (0), incluye solo usuarios activos
+                return $query->where('is_active', 1);
+            });
     }
+
+
+
 
     public function html() {
         return $this->builder()
@@ -57,6 +76,20 @@ class UsersDataTable extends DataTable
                                 'tr' .
                                 <'row'<'col-md-5'i><'col-md-7 mt-2'p>>")
             ->orderBy(6)
+            ->language([
+                'lengthMenu' => 'Mostrar _MENU_ entradas por página',
+                'zeroRecords' => 'No se encontraron registros coincidentes',
+                'info' => 'Mostrando _START_ a _END_ de _TOTAL_ entradas',
+                'infoEmpty' => 'Mostrando 0 a 0 de 0 entradas',
+                'infoFiltered' => '(filtrado de _MAX_ entradas totales)',
+                'search' => 'Buscar:',
+                'paginate' => [
+                    'first' => 'Primero',
+                    'last' => 'Último',
+                    'next' => 'Siguiente',
+                    'previous' => 'Anterior',
+                ],
+            ])
             ->buttons(
                 Button::make('excel')
                     ->text('<i class="bi bi-file-earmark-excel-fill"></i> Excel'),
@@ -72,21 +105,27 @@ class UsersDataTable extends DataTable
     protected function getColumns() {
         return [
             Column::computed('image')
+                ->title('Imagen')
                 ->className('text-center align-middle'),
 
             Column::make('name')
+                ->title('nombre')
                 ->className('text-center align-middle'),
 
             Column::make('email')
+                ->title('Correo')
                 ->className('text-center align-middle'),
 
             Column::computed('role')
+                ->title('Rol')
                 ->className('text-center align-middle'),
 
             Column::computed('status')
+                ->title('Estado')
                 ->className('text-center align-middle'),
 
             Column::computed('action')
+                ->title('Accion')
                 ->exportable(false)
                 ->printable(false)
                 ->className('text-center align-middle'),

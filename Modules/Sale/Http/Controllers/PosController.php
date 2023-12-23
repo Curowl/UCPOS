@@ -14,6 +14,7 @@ use Modules\Sale\Entities\Sale;
 use Modules\Sale\Entities\SaleDetails;
 use Modules\Sale\Entities\SalePayment;
 use Modules\Sale\Http\Requests\StorePosSaleRequest;
+use App\Models\TurnoCaja;
 
 class PosController extends Controller
 {
@@ -29,9 +30,26 @@ class PosController extends Controller
 
 
     public function store(StorePosSaleRequest $request) {
+
+        // Verificar si el usuario tiene una caja abierta
+        $turnoAbierto = TurnoCaja::where('usuario_id', auth()->user()->id)->where('estado', 'abierto')->first();
+
+        if (!$turnoAbierto) {
+            // Agrega un mensaje al toast y redirige
+            toast('No tienes una caja abierta. Abre una caja antes de realizar una venta.', 'error');
+            return redirect()->back()->withInput();
+        }
+
+
+
+        if ($request->paid_amount < $request->total_amount) {
+            $errorMessage = 'El monto recibido no puede ser menor al monto total.';
+            return redirect()->back()->withErrors([$errorMessage])->withInput();
+        }
+    
         DB::transaction(function () use ($request) {
             $due_amount = $request->total_amount - $request->paid_amount;
-
+    
             if ($due_amount == $request->total_amount) {
                 $payment_status = 'Unpaid';
             } elseif ($due_amount > 0) {
@@ -39,7 +57,7 @@ class PosController extends Controller
             } else {
                 $payment_status = 'Paid';
             }
-
+    
             $sale = Sale::create([
                 'date' => now()->format('Y-m-d'),
                 'reference' => 'PSL',
@@ -58,7 +76,7 @@ class PosController extends Controller
                 'tax_amount' => Cart::instance('sale')->tax() * 100,
                 'discount_amount' => Cart::instance('sale')->discount() * 100,
             ]);
-
+    
             foreach (Cart::instance('sale')->content() as $cart_item) {
                 SaleDetails::create([
                     'sale_id' => $sale->id,
@@ -73,15 +91,25 @@ class PosController extends Controller
                     'product_discount_type' => $cart_item->options->product_discount_type,
                     'product_tax_amount' => $cart_item->options->product_tax * 100,
                 ]);
-
+    
                 $product = Product::findOrFail($cart_item->id);
                 $product->update([
                     'product_quantity' => $product->product_quantity - $cart_item->qty
                 ]);
             }
-
+    
+            // Obtener el turno de caja abierto para el usuario actual
+            $turnoAbierto = TurnoCaja::where('usuario_id', auth()->user()->id)->where('estado', 'abierto')->first();
+    
+            if ($turnoAbierto) {
+                $sale->turno_caja_id = $turnoAbierto->id;
+                $sale->save();
+            } else {
+                // Manejar la ausencia de un turno abierto
+            }
+    
             Cart::instance('sale')->destroy();
-
+    
             if ($sale->paid_amount > 0) {
                 SalePayment::create([
                     'date' => now()->format('Y-m-d'),
@@ -92,9 +120,10 @@ class PosController extends Controller
                 ]);
             }
         });
-
+    
         toast('POS Sale Created!', 'success');
-
+    
         return redirect()->route('sales.index');
     }
+    
 }
