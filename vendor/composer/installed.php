@@ -3,7 +3,7 @@
         'name' => 'laravel/laravel',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '475f8cb7d17bcfe751b41c1cd774c054419fe73c',
+        'reference' => '0847b254fc6a465c7b20568eb827ba8867e74f8b',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -454,7 +454,7 @@
         'laravel/laravel' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '475f8cb7d17bcfe751b41c1cd774c054419fe73c',
+            'reference' => '0847b254fc6a465c7b20568eb827ba8867e74f8b',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -663,6 +663,15 @@
             'install_path' => __DIR__ . '/../myclabs/deep-copy',
             'aliases' => array(),
             'dev_requirement' => true,
+        ),
+        'nahidulhasan/html2pdf' => array(
+            'pretty_version' => '1.4',
+            'version' => '1.4.0.0',
+            'reference' => 'f5d0d66c3b7e8add1f6b2cf71d0ae03fe386d98a',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../nahidulhasan/html2pdf',
+            'aliases' => array(),
+            'dev_requirement' => false,
         ),
         'nesbot/carbon' => array(
             'pretty_version' => '2.72.0',
@@ -928,8 +937,8 @@
         'psr/log-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '1.0|2.0|3.0',
-                1 => '3.0.0',
+                0 => '3.0.0',
+                1 => '1.0|2.0|3.0',
             ),
         ),
         'psr/simple-cache' => array(

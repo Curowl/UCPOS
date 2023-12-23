@@ -7,6 +7,7 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'App\\Console\\Kernel' => $baseDir . '/app/Console/Kernel.php',
+    'App\\Custom\\Http\\Request' => $baseDir . '/app/Custom/Http/Request.php',
     'App\\DataTables\\TurnoCajaDataTable' => $baseDir . '/app/DataTables/TurnoCajaDataTable.php',
     'App\\Exceptions\\Handler' => $baseDir . '/app/Exceptions/Handler.php',
     'App\\Http\\Controllers\\Auth\\ConfirmPasswordController' => $baseDir . '/app/Http/Controllers/Auth/ConfirmPasswordController.php',
@@ -3991,6 +3992,9 @@ return array(
     'Monolog\\SignalHandler' => $vendorDir . '/monolog/monolog/src/Monolog/SignalHandler.php',
     'Monolog\\Test\\TestCase' => $vendorDir . '/monolog/monolog/src/Monolog/Test/TestCase.php',
     'Monolog\\Utils' => $vendorDir . '/monolog/monolog/src/Monolog/Utils.php',
+    'NahidulHasan\\Html2pdf\\Facades\\Pdf' => $vendorDir . '/nahidulhasan/html2pdf/src/Facades/Pdf.php',
+    'NahidulHasan\\Html2pdf\\Html2pdfServiceProvider' => $vendorDir . '/nahidulhasan/html2pdf/src/Html2pdfServiceProvider.php',
+    'NahidulHasan\\Html2pdf\\Pdf' => $vendorDir . '/nahidulhasan/html2pdf/src/Pdf.php',
     'Nette\\ArgumentOutOfRangeException' => $vendorDir . '/nette/utils/src/exceptions.php',
     'Nette\\DeprecatedException' => $vendorDir . '/nette/utils/src/exceptions.php',
     'Nette\\DirectoryNotFoundException' => $vendorDir . '/nette/utils/src/exceptions.php',

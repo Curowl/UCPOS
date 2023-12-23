@@ -6,6 +6,9 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use Modules\Purchase\Entities\Purchase;
 use Barryvdh\Snappy\Facades\SnappyPdf;
+use NahidulHasan\Html2pdf\Facades\Pdf;
+
+$document = Pdf::generatePdf('<h1>Test</h1>');
 
 class PurchasesReport extends Component
 {
@@ -68,7 +71,7 @@ class PurchasesReport extends Component
             })
             ->orderBy('date', 'desc')->get();
 
-        $pdf = SnappyPdf::loadView('livewire.reports.PDF.purchases-report-pdf', [
+        $pdf = Pdf::loadView('livewire.reports.PDF.purchases-report-pdf', [
             'purchases' => $purchases
         ])->setPaper('a4');
 
