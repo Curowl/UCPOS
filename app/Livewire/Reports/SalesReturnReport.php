@@ -5,6 +5,7 @@ namespace App\Livewire\Reports;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Modules\SalesReturn\Entities\SaleReturn;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class SalesReturnReport extends Component
 {
@@ -53,7 +54,7 @@ class SalesReturnReport extends Component
         ]);
     }
 
-    public function generatePdf() {
+   /* public function generatePdf() {
         $this->validate();
 
         $sale_returns = SaleReturn::whereDate('date', '>=', $this->start_date)
@@ -76,6 +77,33 @@ class SalesReturnReport extends Component
         ])->setPaper('a4');
 
         return $pdf->stream('reporte-de-devolucion-de-ventas.pdf');
+    }*/
+
+    public function generatePdf() {
+        $this->validate();
+
+        $sale_returns = SaleReturn::whereDate('date', '>=', $this->start_date)
+            ->whereDate('date', '<=', $this->end_date)
+            ->when($this->customer_id, function ($query) {
+                return $query->where('customer_id', $this->customer_id);
+            })
+            ->when($this->sale_return_status, function ($query) {
+                return $query->where('status', $this->sale_return_status);
+            })
+            ->when($this->payment_status, function ($query) {
+                return $query->where('payment_status', $this->payment_status);
+            })
+            ->orderBy('date', 'desc')->get();
+
+        $pdf = PDF::loadView('livewire.reports.PDF.sales-return-report-pdf', [
+            'sale_returns' => $sale_returns,
+            'start_date' => $this->start_date,
+            'end_date' => $this->end_date
+        ]);
+
+        return response()->streamDownload(function() use ($pdf) {
+            echo $pdf->stream();
+        }, 'reporte-de-devolucion-de-ventas.pdf');
     }
 
     public function generateReport() {

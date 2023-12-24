@@ -11,6 +11,8 @@
 |
 */
 
+use Barryvdh\DomPDF\Facade\Pdf;
+
 Route::group(['middleware' => 'auth'], function () {
 
     //POS
@@ -22,7 +24,7 @@ Route::group(['middleware' => 'auth'], function () {
         $sale = \Modules\Sale\Entities\Sale::findOrFail($id);
         $customer = \Modules\People\Entities\Customer::findOrFail($sale->customer_id);
 
-        $pdf = \PDF::loadView('sale::print', [
+        $pdf = PDF::loadView('sale::print', [
             'sale' => $sale,
             'customer' => $customer,
         ])->setPaper('a4');
@@ -33,9 +35,9 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/sales/pos/pdf/{id}', function ($id) {
         $sale = \Modules\Sale\Entities\Sale::findOrFail($id);
 
-        $pdf = \PDF::loadView('sale::print-pos', [
+        $pdf = PDF::loadView('sale::print-pos', [
             'sale' => $sale,
-        ])->setPaper('a7')
+        ])->setPaper('c7')
             ->setOption('margin-top', 8)
             ->setOption('margin-bottom', 8)
             ->setOption('margin-left', 5)

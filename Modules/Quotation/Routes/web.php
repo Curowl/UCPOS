@@ -11,9 +11,12 @@
 |
 */
 
+use Barryvdh\DomPDF\Facade\Pdf;
+
+
 Route::group(['middleware' => 'auth'], function () {
     //Generate PDF
-    Route::get('/quotations/pdf/{id}', function ($id) {
+    /*Route::get('/quotations/pdf/{id}', function ($id) {
         $quotation = \Modules\Quotation\Entities\Quotation::findOrFail($id);
         $customer = \Modules\People\Entities\Customer::findOrFail($quotation->customer_id);
 
@@ -23,7 +26,21 @@ Route::group(['middleware' => 'auth'], function () {
         ])->setPaper('a4');
 
         return $pdf->stream('quotation-'. $quotation->reference .'.pdf');
+    })->name('quotations.pdf');*/
+
+    Route::get('/quotations/pdf/{id}', function ($id) {
+        $quotation = \Modules\Quotation\Entities\Quotation::findOrFail($id);
+        $customer = \Modules\People\Entities\Customer::findOrFail($quotation->customer_id);
+
+        $pdf = PDF::loadView('quotation::print', [
+            'quotation' => $quotation,
+            'customer' => $customer,
+        ])->setPaper('a4', 'portrait');
+
+        return $pdf->stream('quotation-'. $quotation->reference .'.pdf');
     })->name('quotations.pdf');
+
+
 
     //Send Quotation Mail
     Route::get('/quotation/mail/{quotation}', 'SendQuotationEmailController')->name('quotation.email');

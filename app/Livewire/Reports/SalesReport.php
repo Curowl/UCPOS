@@ -6,6 +6,7 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use Modules\Sale\Entities\Sale;
 use Barryvdh\Snappy\Facades\SnappyPdf;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class SalesReport extends Component
 {
@@ -58,7 +59,7 @@ class SalesReport extends Component
         ]);
     }
 
-    public function generatePdf() {
+  /*  public function generatePdf() {
         // Obtén los datos necesarios para el PDF (puedes ajustar esto según tus necesidades)
         $sales = Sale::whereDate('date', '>=', $this->start_date)
             ->whereDate('date', '<=', $this->end_date)
@@ -80,6 +81,32 @@ class SalesReport extends Component
 
         // Mostrar el PDF en el navegador
         return $pdf->stream('reporte-de-ventas.pdf');
+    }*/
+
+    public function generatePdf() {
+        // Obtén los datos necesarios para el PDF (puedes ajustar esto según tus necesidades)
+        $sales = Sale::whereDate('date', '>=', $this->start_date)
+            ->whereDate('date', '<=', $this->end_date)
+            ->when($this->customer_id, function ($query) {
+                return $query->where('customer_id', $this->customer_id);
+            })
+            ->when($this->sale_status, function ($query) {
+                return $query->where('status', $this->sale_status);
+            })
+            ->when($this->payment_status, function ($query) {
+                return $query->where('payment_status', $this->payment_status);
+            })
+            ->orderBy('date', 'desc')->get();
+
+        // Cargar vista del PDF
+        $pdf = PDF::loadView('livewire.reports.PDF.sales-report-pdf', [
+            'sales' => $sales
+        ]);
+
+        // Devolver el stream directamente
+        return response()->streamDownload(function() use ($pdf) {
+            echo $pdf->stream();
+        }, 'reporte-de-ventas.pdf');
     }
 
     public function generateReport() {

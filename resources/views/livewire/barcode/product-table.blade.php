@@ -71,7 +71,7 @@
                                 {{ $product->product_name }}
                             </p>
                             <div>
-                                {!! $barcode !!}
+                                <img src="data:image/svg+xml;base64,{{ $barcode }}">
                             </div>
                             <p style="font-size: 15px;color: #000;">
                                 Price:: {{ format_currency($product->product_price) }}

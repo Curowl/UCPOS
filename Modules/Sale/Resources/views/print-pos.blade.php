@@ -7,10 +7,14 @@
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
+        body{
+            margin: 0;
+        }
         * {
             font-size: 12px;
             line-height: 14px;
             font-family: 'Ubuntu', sans-serif;
+            margin: 5px;
         }
         h3 {
             font-size: 12px;
@@ -22,7 +26,7 @@
             border-collapse: collapse;
         }
         tr {border-bottom: 1px dashed #ddd;}
-        td,th {padding: 7px 0;width: 50%;}
+        td,th {padding: 7px 0;width: 40%;}
 
         table {width: 100%;}
         tfoot tr th:first-child {text-align: left;}
@@ -59,19 +63,21 @@
         <div class="centered">
 
             <img width="80" src="{{ public_path('images/logo-dark-mini.png') }}" alt="Logo">
-            <h3 style="margin-bottom: 2px">{{ settings()->company_name }}</h3>
+            <h3 style="margin-bottom: 1px">{{ settings()->company_name }}</h3>
 
-            <p style="font-size: 9px;line-height: 12px;margin-top: 0">
+            <p style="font-size: 9px;line-height: 10px;margin-top: 0">
                 <br><span>Ruc: 2020603760002K</span>
                <br> {{ settings()->company_email }}, {{ settings()->company_phone }}
                 <br>{{ settings()->company_address }}
 
-            </p>
+                <br>
+
         </div>
-        <p>
+        <p >
             Fecha: {{ \Carbon\Carbon::parse($sale->date)->format('d M, Y') }}<br>
             Referencia: {{ $sale->reference }}<br>
-            Nombre: {{ $sale->customer_name }}
+            Nombre: {{ $sale->customer_name }}<br>
+            Vendedor: <strong>{{ auth()->user()->name }}</strong>
         </p>
         <table class="table-data">
             <tbody>
@@ -117,10 +123,10 @@
         <table>
             <tbody>
                 <tr style="background-color:#ddd;">
-                    <td class="centered" style="padding: 5px;">
+                    <td class="centered" style="padding: 5px; width: 100%">
                         Pagado con: {{ $sale->payment_method }}
                     </td>
-                    <td class="centered" style="padding: 5px;">
+                    <td class="centered" style="padding: 5px; width: 100%">
                         Monto: {{ format_currency($sale->paid_amount) }}
                     </td>
 
@@ -129,13 +135,12 @@
                 <tr style="border-bottom: 0;">
                     <td class="centered" colspan="3">
                         <div style="margin-top: 10px;">
-                            {!! \Milon\Barcode\Facades\DNS1DFacade::getBarcodeSVG($sale->reference, 'C128', 1, 25, 'black', false) !!}
+                            {!! $barcodeSvg = \Milon\Barcode\Facades\DNS1DFacade::getBarcodeSVG($sale->reference, 'C128', 1, 25, 'black', false);
+                                    $barcodeBase64 = base64_encode($barcodeSvg);
+                            !!}
+                            <img src="data:image/svg+xml;base64,<?php echo $barcodeBase64 ?>">
                         </div>
                     </td>
-                </tr>
-
-                <tr  style="border-bottom: 0;">
-                    Vendedor: <strong>{{ auth()->user()->name }}</strong>
                 </tr>
 
             </tbody>

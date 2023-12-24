@@ -10,6 +10,7 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+use Barryvdh\DomPDF\Facade\Pdf;
 
 Route::group(['middleware' => 'auth'], function () {
     //Generate PDF
@@ -17,7 +18,7 @@ Route::group(['middleware' => 'auth'], function () {
         $saleReturn = \Modules\SalesReturn\Entities\SaleReturn::findOrFail($id);
         $customer = \Modules\People\Entities\Customer::findOrFail($saleReturn->customer_id);
 
-        $pdf = \PDF::loadView('salesreturn::print', [
+        $pdf = PDF::loadView('salesreturn::print', [
             'sale_return' => $saleReturn,
             'customer' => $customer,
         ])->setPaper('a4');

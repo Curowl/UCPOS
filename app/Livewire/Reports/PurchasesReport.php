@@ -6,9 +6,7 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use Modules\Purchase\Entities\Purchase;
 use Barryvdh\Snappy\Facades\SnappyPdf;
-use NahidulHasan\Html2pdf\Facades\Pdf;
-
-$document = Pdf::generatePdf('<h1>Test</h1>');
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class PurchasesReport extends Component
 {
@@ -57,7 +55,7 @@ class PurchasesReport extends Component
         ]);
     }
 
-    public function generatePdf() {
+/*public function generatePdf() {
         $purchases = Purchase::whereDate('date', '>=', $this->start_date)
             ->whereDate('date', '<=', $this->end_date)
             ->when($this->supplier_id, function ($query) {
@@ -76,7 +74,35 @@ class PurchasesReport extends Component
         ])->setPaper('a4');
 
         return $pdf->stream('reporte-de-compras.pdf');
+    }*/
+
+    public function generatePdf() {
+        $purchases = Purchase::whereDate('date', '>=', $this->start_date)
+            ->whereDate('date', '<=', $this->end_date)
+            ->when($this->supplier_id, function ($query) {
+                return $query->where('supplier_id', $this->supplier_id);
+            })
+            ->when($this->purchase_status, function ($query) {
+                return $query->where('status', $this->purchase_status);
+            })
+            ->when($this->payment_status, function ($query) {
+                return $query->where('payment_status', $this->payment_status);
+            })
+            ->orderBy('date', 'desc')->get();
+
+        $pdf = Pdf::loadView('livewire.reports.PDF.purchases-report-pdf', [
+            'purchases' => $purchases
+        ]);
+
+        // Devolver stream directamente
+        return response()->streamDownload(function() use ($pdf) {
+            echo $pdf->stream();
+        }, 'reporte-de-compras.pdf');
     }
+
+
+
+
 
     public function generateReport() {
         $this->validate();
