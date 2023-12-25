@@ -50,7 +50,7 @@
     <div wire:loading wire:target="generateBarcodes" class="w-100">
         <div class="d-flex justify-content-center">
             <div class="spinner-border text-primary" role="status">
-                <span class="sr-only">Loading...</span>
+                <span class="sr-only">Cargando...</span>
             </div>
         </div>
     </div>
@@ -59,7 +59,7 @@
         <div class="text-right mb-3">
             <button wire:click="getPdf" wire:loading.attr="disabled" type="button" class="btn btn-primary">
                 <span wire:loading wire:target="getPdf" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                <i wire:loading.remove wire:target="getPdf" class="bi bi-file-earmark-pdf"></i> Download PDF
+                <i wire:loading.remove wire:target="getPdf" class="bi bi-file-earmark-pdf"></i> Descargar PDF
             </button>
         </div>
         <div class="card">

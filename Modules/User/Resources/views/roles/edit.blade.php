@@ -77,6 +77,7 @@
                                                         <label class="custom-control-label" for="show_notifications">Notificationes</label>
                                                     </div>
                                                 </div>
+                                                {{--
                                                 <div class="col-12">
                                                     <div class="custom-control custom-switch">
                                                         <input type="checkbox" class="custom-control-input"
@@ -93,12 +94,13 @@
                                                         <label class="custom-control-label" for="show_weekly_sales_purchases">Compras y ventas mensuales</label>
                                                     </div>
                                                 </div>
+                                                --}}
                                                 <div class="col-12">
                                                     <div class="custom-control custom-switch">
                                                         <input type="checkbox" class="custom-control-input"
                                                                id="show_monthly_cashflow" name="permissions[]"
                                                                value="show_monthly_cashflow" {{ $role->hasPermissionTo('show_monthly_cashflow') ? 'checked' : '' }}>
-                                                        <label class="custom-control-label" for="show_monthly_cashflow">Flujo de caja mensual</label>
+                                                        <label class="custom-control-label" for="show_monthly_cashflow">Todos los Graficos</label>
                                                     </div>
                                                 </div>
                                             </div>

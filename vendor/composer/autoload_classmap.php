@@ -2876,6 +2876,8 @@ return array(
     'Knp\\Snappy\\GeneratorInterface' => $vendorDir . '/knplabs/knp-snappy/src/Knp/Snappy/GeneratorInterface.php',
     'Knp\\Snappy\\Image' => $vendorDir . '/knplabs/knp-snappy/src/Knp/Snappy/Image.php',
     'Knp\\Snappy\\Pdf' => $vendorDir . '/knplabs/knp-snappy/src/Knp/Snappy/Pdf.php',
+    'LaravelDaily\\LaravelCharts\\Classes\\LaravelChart' => $vendorDir . '/laraveldaily/laravel-charts/src/Classes/LaravelChart.php',
+    'LaravelDaily\\LaravelCharts\\LaravelChartsServiceProvider' => $vendorDir . '/laraveldaily/laravel-charts/src/LaravelChartsServiceProvider.php',
     'Laravel\\Prompts\\Concerns\\Colors' => $vendorDir . '/laravel/prompts/src/Concerns/Colors.php',
     'Laravel\\Prompts\\Concerns\\Cursor' => $vendorDir . '/laravel/prompts/src/Concerns/Cursor.php',
     'Laravel\\Prompts\\Concerns\\Erase' => $vendorDir . '/laravel/prompts/src/Concerns/Erase.php',
